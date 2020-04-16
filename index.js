@@ -1,3 +1,5 @@
+const API_URL = "https://cfw-takehome.developers.workers.dev/api/variants";
+
 class titleRewriter {
   text(text) {
     // remove all text until it reaches lastInTextNode
@@ -42,16 +44,13 @@ class urlRewriter {
   }
 
   element(element) {
-    const attribute = element.getAttribute(this.targetAttribute);
-    if (attribute) {
-      element.setAttribute(this.targetAttribute, "https://github.com/jyChou");
-    }
+      element.setAttribute('href', "https://github.com/jyChou");
   }
 
   text(text) {
     // remove all text until it reaches lastInTextNode
     if (text.lastInTextNode) {
-      text.replace("Go to Chin-Yu's github");
+      text.replace("Visit my github!");
     } else {
       // remove any intermediate text
       text.remove();
@@ -63,15 +62,13 @@ const rewriter = new HTMLRewriter()
   .on("title", new titleRewriter())
   .on("h1#title", new headingRewriter())
   .on("p#description", new descRewriter())
-  .on("a#url", new urlRewriter("href"));
+  .on("a#url", new urlRewriter());
 
 async function handleRequest(request) {
   // Get the urls of two variants
   let variants = null;
   try {
-    const response = await fetch(
-      "https://cfw-takehome.developers.workers.dev/api/variants"
-    );
+    const response = await fetch(API_URL);
     if (response.ok) {
       const data = await response.json();
       variants = data["variants"];
@@ -80,9 +77,9 @@ async function handleRequest(request) {
     }
   } catch (err) {
     console.error(err);
-  }    
+  }
   // if fetch fails, response with error status code
-  if(!variants){
+  if (!variants) {
     return new Response("Fetch failed.");
   }
   // Create response of two variants
